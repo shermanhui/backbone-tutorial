@@ -6,9 +6,9 @@
 			'click button#add': 'addItem'
 		},
 		initialize: function(){
-			_.bindAll(this, 'render'); // fixes loss of context for 'this' within methods
+			_.bindAll(this, 'render', 'addItem'); // fixes loss of context for 'this' within methods, every function that uses 'this' should be in here
 
-			this.counter = 0;
+			this.counter = 0; // total number of items added so far
 			this.render(); // not all views are self-rendering. This one is.
 		},
 
