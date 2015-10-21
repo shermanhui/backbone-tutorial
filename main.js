@@ -17,7 +17,7 @@
 			'click button#add': 'addItem'
 		},
 
-		initialize: function(){
+		initialize: function(){ // now instantiates a Collection and binds its add event to own method 'appendItem'
 			_.bindAll(this, 'render', 'addItem', 'appendItem'); // every fn that uses 'this' as the current obj should be in here!
 
 			this.collection = new List();
@@ -28,15 +28,15 @@
 		},
 
 		render: function(){
-			var self = this;
+			var self = this; //save reference to 'this' so it can be accessed within the scope of callback
 			$(this.el).append("<button id='add'>Add List Item</button>");
 			$(this.el).append("<ul></ul>")
 			_(this.collection.models).each(function(item){ //in case collection is not empty
 				self.appendItem(item);
-			}, this);
+			}, this); // reference to 'this' was saved above
 		},
 
-		addItem: function(){
+		addItem: function(){ // now works only for models/collections, View updates delegated to add listener ('appendItem()')
 			this.counter++;
 			var item = new Item();
 			item.set({
@@ -46,7 +46,7 @@
 			// $('ul', this.el).append("<li>Counted " + this.counter + " Times</li>");
 		},
 
-		appendItem: function(item){
+		appendItem: function(item){ // this is triggered by collection event add and handles visual update
 			$('ul', this.el).append("<li>" + item.get('part1')+" "+item.get('part2') + "</li>");
 		}
 	});
