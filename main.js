@@ -1,4 +1,4 @@
-(function($){ // illustrates how to use a Collection of Models to store data and tie changes to a View
+(function($){ // illustrates how to delegate the rendering of a Model to a dedicated View
 	var Item = Backbone.Model.extend({
 		defaults: {
 			part1: 'This Is',
@@ -8,6 +8,18 @@
 
 	var List = Backbone.Collection.extend({
 		model: Item
+	});
+
+	var ItemView = Backbone.View.extend({ // Responsible for rendering each individual Item
+		tagName: 'li', // name of (orphan) root tag in this.el
+
+		initialize: function() {
+			_.bindAll(this, 'render'); // every fn that uses 'this' as the current object should be included here
+		},
+		render: function(){
+			$(this.el).html('<span>'+this.model.get('part1')+' '+this.model.get('part2')+'</span>');
+			return this; // for chainable calls, like .render().el
+		}
 	});
 
 	var ListView = Backbone.View.extend({
@@ -36,18 +48,20 @@
 			}, this); // reference to 'this' was saved above
 		},
 
-		addItem: function(){ // now works only for models/collections, View updates delegated to add listener ('appendItem()')
+		addItem: function(){
 			this.counter++;
 			var item = new Item();
 			item.set({
 				part2: item.get('part2') + " " + this.counter // modify item defaults
 			});
-			this.collection.add(item); // add item to collection; view is updated via event 'add'
-			// $('ul', this.el).append("<li>Counted " + this.counter + " Times</li>");
+			this.collection.add(item);
 		},
 
-		appendItem: function(item){ // this is triggered by collection event add and handles visual update
-			$('ul', this.el).append("<li>" + item.get('part1')+" "+item.get('part2') + "</li>");
+		appendItem: function(item){ // no longer responsible for rendering an individual Item. This is now delegated to render() in each of the ItemView instance
+			var itemView = new ItemView({
+				model: item
+			});
+			$('ul', this.el).append(itemView.render().el);
 		}
 	});
 
